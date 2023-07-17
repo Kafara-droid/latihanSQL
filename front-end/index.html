@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ApexCharts Example</title>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .chart-container {
+      margin: 10px;
+    }
+    .chart-container > div {
+      height: 400px;
+    }
+    .section {
+      margin-top: 40px;
+    }
+    @media (min-width: 768px) {
+      .section {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="bg-blue-500 py-4">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between">
+        <div class="text-white font-bold text-lg">Menu</div>
+        <div class="text-white">
+          <button class="focus:outline-none">Item 1</button>
+          <button class="ml-4 focus:outline-none">Item 2</button>
+          <button class="ml-4 focus:outline-none">Item 3</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto px-4 py-8">
+    <div class="section">
+      <div id="chart-container1" class="chart-container bg-white shadow-lg rounded-lg"></div>
+      <div id="chart-container2" class="chart-container bg-white shadow-lg rounded-lg"></div>
+      <div id="chart-container3" class="chart-container bg-white shadow-lg rounded-lg"></div>
+      <div id="chart-container4" class="chart-container bg-white shadow-lg rounded-lg"></div>
+    </div>
+    <div class="section">
+      <div id="chart-container5" class="chart-container bg-white shadow-lg rounded-lg"></div>
+      <div id="chart-container6" class="chart-container bg-white shadow-lg rounded-lg"></div>
+      <div id="chart-container7" class="chart-container bg-white shadow-lg rounded-lg"></div>
+      <div id="chart-container8" class="chart-container bg-white shadow-lg rounded-lg"></div>
+    </div>
+  </div>
+
+  <script>
+    // Fetch data from API for top customers
+    fetch('http://localhost:3000/top-customers')
+      .then(response => response.json())
+      .then(data => {
+        // Top 10 Customer dengan jumlah frekuensi rental film terbanyak [bar-chart]
+        let chartData1 = {
+          customerNames: data.map(x => `${x.first_name} ${x.last_name}`),
+          rentalCounts: data.map(y => y.rental_count)
+        };
+        const chartOptions1 = {
+          chart: {
+            type: 'bar',
+            height: '100%'
+          },
+          series: [{
+            name: 'Rental Count',
+            data: chartData1.rentalCounts
+          }],
+          title: {
+            text: 'Top 10 Customers by Rental Frequency',
+            align: 'center',
+            style: {
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }
+          },
+          xaxis: {
+            categories: chartData1.customerNames,
+            labels: {
+              show: true
+            }
+          }
+        };
+        const chart1 = new ApexCharts(document.querySelector('#chart-container1'), chartOptions1);
+        chart1.render();
+        animateChart(chart1);
+      })
+      .catch(error => {
+        console.log('Error:', error);
+      });
+
+    // Fetch data from API for other charts
+    fetch('http://localhost:3000/film-category')
+      .then(response => response.json())
+      .then(data => {
+        // Jumlah Film dalam bentuk persentase berdasarkan kategori film [pie-chart]
+        let chartData2 = {
+          categories: data.map(x => x.category_name),
+          filmCounts: data.map(x => x.film_count),
+          percentages: data.map(x => x.percentage)
+        };
+        const chartOptions2 = {
+          chart: {
+            type: 'pie',
+            height: '100%'
+          },
+          series: chartData2.filmCounts,
+          labels: chartData2.categories,
+          title: {
+            text: 'Film Distribution by Category',
+            align: 'center',
+            style: {
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }
+          }
+        };
+        const chart2 = new ApexCharts(document.querySelector('#chart-container2'), chartOptions2);
+        chart2.render();
+      })
+      .catch(error => {
+        console.log('Error:', error);
+      });
+
+    // Fetch data from API for other charts
+    fetch('http://localhost:3000/actor-count')
+      .then(response => response.json())
+      .then(data => {
+        // Top 25 film dengan bintang aktor terbanyak [bar-chart]
+        let chartData3 = {
+          filmNames: data.map(x => x.title),
+          actorCounts: data.map(x => x.actor_count)
+        };
+        const chartOptions3 = {
+          chart: {
+            type: 'bar',
+            height: '100%'
+          },
+          series: [{
+            name: 'Actor Count',
+            data: chartData3.actorCounts
+          }],
+          title: {
+            text: 'Top 25 Films with Most Actor Starring',
+            align: 'center',
+            style: {
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }
+          },
+          xaxis: {
+            categories: chartData3.filmNames,
+            labels: {
+              show: true
+            }
+          }
+        };
+        const chart3 = new ApexCharts(document.querySelector('#chart-container3'), chartOptions3);
+        chart3.render();
+        animateChart(chart3);
+      })
+      .catch(error => {
+        console.log('Error:', error);
+      });
+
+    // Fetch data from API for other charts
+    fetch('http://localhost:3000/customers-payment')
+      .then(response => response.json())
+      .then(data => {
+        // Top 10 customer dengan jumlah pembayaran terbesar dari merental film [bar-chart]
+        let chartData4 = {
+          customerNames: data.map(x => `${x.first_name} ${x.last_name}`),
+          paymentAmounts: data.map(x => x.total_payment)
+        };
+        const chartOptions4 = {
+          chart: {
+            type: 'bar',
+            height: '100%'
+          },
+          series: [{
+            name: 'Payment Amount',
+            data: chartData4.paymentAmounts
+          }],
+          title: {
+            text: 'Top 10 Customers by Highest Payments from Film Rentals',
+            align: 'center',
+            style: {
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }
+          },
+          xaxis: {
+            categories: chartData4.customerNames,
+            labels: {
+              show: true
+            }
+          }
+        };
+        const chart4 = new ApexCharts(document.querySelector('#chart-container4'), chartOptions4);
+        chart4.render();
+        animateChart(chart4);
+      })
+      .catch(error => {
+        console.log('Error:', error);
+      });
+
+    // Fetch data from API for other charts
+    fetch('http://localhost:3000/count-by-language')
+      .then(response => response.json())
+      .then(data => {
+        // Jumlah film berdasarkan bahasa [donut-chart]
+        let chartData5 = {
+          languages: data.map(x => x.language_name),
+          movieCounts: data.map(x => x.film_count)
+        };
+        const chartOptions5 = {
+          chart: {
+            type: 'donut',
+            height: '100%'
+          },
+          series: chartData5.movieCounts,
+          labels: chartData5.languages,
+          title: {
+            text: 'Film Distribution by Language',
+            align: 'center',
+            style: {
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }
+          }
+        };
+        const chart5 = new ApexCharts(document.querySelector('#chart-container5'), chartOptions5);
+        chart5.render();
+      })
+      .catch(error => {
+        console.log('Error:', error);
+      });
+
+    // Fetch data from API for other charts
+    fetch('http://localhost:3000/daily-revenue')
+      .then(response => response.json())
+      .then(data => {
+        // Jumlah uang pemasukan perhari [line-chart]
+        let chartData6 = {
+          days: data.map(x => x.transaction_date),
+          revenues: data.map(x => x.total_daily_income)
+        };
+        const chartOptions6 = {
+          chart: {
+            type: 'line',
+            height: '100%'
+          },
+          series: [{
+            name: 'Revenue',
+            data: chartData6.revenues
+          }],
+          title: {
+            text: 'Daily Revenue',
+            align: 'center',
+            style: {
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }
+          },
+          xaxis: {
+            categories: chartData6.days,
+            labels: {
+              show: true
+            }
+          }
+        };
+        const chart6 = new ApexCharts(document.querySelector('#chart-container6'), chartOptions6);
+        chart6.render();
+        animateChart(chart6);
+      })
+      .catch(error => {
+        console.log('Error:', error);
+      });
+
+    // Fetch data from API for other charts
+    fetch('http://localhost:3000/count-by-monthly-category')
+    .then(response => response.json())
+    .then(data => {
+      // Jumlah rental film perbulannya berdasarkan kategori filmnya [grouped stacked column-chart]
+      let chartData7 = {
+        months: data.map(x => x.transaction_date),
+        categoryCounts: data.reduce((result, item) => {
+          if (!result[item.category_name]) {
+            result[item.category_name] = [];
+          }
+          result[item.category_name].push(item.rental_count);
+          return result;
+        }, {})
+      };
+      const chartOptions7 = {
+        chart: {
+          type: 'bar',
+          height: '100%',
+          stacked: true,
+          stackType: '100%'
+        },
+        series: Object.entries(chartData7.categoryCounts).map(([categoryName, counts]) => ({
+          name: categoryName,
+          data: counts
+        })),
+        xaxis: {
+          categories: chartData7.months,
+          labels: {
+            show: true
+          }
+        },
+        yaxis: {
+          title: {
+            text: 'Rental Count'
+          }
+        },
+        title: {
+          text: 'Monthly Film Rentals by Category',
+          align: 'center',
+          style: {
+            fontSize: '18px',
+            fontWeight: 'bold'
+          }
+        }
+      };
+      const chart7 = new ApexCharts(document.querySelector('#chart-container7'), chartOptions7);
+      chart7.render();
+    })
+    .catch(error => {
+      console.log('Error:', error);
+    });
+
+    // Fetch data from API for other charts
+    fetch('http://localhost:3000/top-longest-rental')
+      .then(response => response.json())
+      .then(data => {
+        // Top 25 Film dengan waktu rental terlama (dalam satuan jam) [bar-chart]
+        let chartData8 = {
+          filmNames: data.map(x => x.film_title),
+          rentalDurations: data.map(x => x.rental_duration_hours)
+        };
+        const chartOptions8 = {
+          chart: {
+            type: 'bar',
+            height: '100%'
+          },
+          series: [{
+            name: 'Rental Duration',
+            data: chartData8.rentalDurations
+          }],
+          title: {
+            text: 'Top 25 Films with Longest Rental Duration (in hours)',
+            align: 'center',
+            style: {
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }
+          },
+          xaxis: {
+            categories: chartData8.filmNames,
+            labels: {
+              show: true
+            }
+          }
+        };
+        const chart8 = new ApexCharts(document.querySelector('#chart-container8'), chartOptions8);
+        chart8.render();
+        animateChart(chart8);
+      })
+      .catch(error => {
+        console.log('Error:', error);
+      });
+
+    function animateChart(chart) {
+      // Add animation to the chart
+    }
+  </script>
+</body>
+</html>
