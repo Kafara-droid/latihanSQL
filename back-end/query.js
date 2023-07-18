@@ -152,22 +152,23 @@ const query = {
     try {
       const result = await database.raw(`
         SELECT 
-            ca.name AS category_name,
-            COUNT(r.rental_id) AS rental_count
+            DATE_FORMAT(rental_date, '%Y-%m') AS month,
+            category.name AS category,
+            COUNT(*) AS rental_count
         FROM 
-            rental r
+            rental
         JOIN 
-            inventory i ON r.inventory_id = i.inventory_id
+            inventory ON rental.inventory_id = inventory.inventory_id
         JOIN 
-            film f ON i.film_id = f.film_id
+            film ON inventory.film_id = film.film_id
         JOIN 
-            film_category ON f.film_id = film_category.film_id
+            film_category ON film.film_id = film_category.film_id
         JOIN 
-            category ca ON film_category.category_id = ca.category_id
+            category ON film_category.category_id = category.category_id
         GROUP BY 
-            DATE_FORMAT(r.rental_date, '%Y-%m'), ca.name
+            month, category
         ORDER BY 
-            DATE_FORMAT(r.rental_date, '%Y-%m'), ca.name;
+            month, category;
       `);
       return result[0];
     } catch (error) {
@@ -175,6 +176,7 @@ const query = {
       throw error;
     }
   },
+  
 
   getTopFilmsByRentalDuration: async () => {
     try {

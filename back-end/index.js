@@ -108,11 +108,6 @@ app.get('/top-longest-rental', async (req, res) => {
   }
 });
 
-// Serve index.html
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
-
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
